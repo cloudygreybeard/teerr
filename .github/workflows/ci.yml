@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: Linux x86_64
+          - os: macos-latest
+            name: macOS ARM64
+          - os: macos-13
+            name: macOS x86_64
+
+    runs-on: ${{ matrix.os }}
+    name: Test (${{ matrix.name }})
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Run tests
+        run: go test -v ./...
+
+      - name: Build
+        run: go build -o teerr .
+
+      - name: Verify version
+        run: ./teerr --version
+
+      - name: Verify help
+        run: ./teerr --help
+
+      - name: Functional test
+        run: |
+          # Basic tee functionality
+          output=$(echo "hello world" | ./teerr 2>/dev/null)
+          if [ "$output" != "hello world" ]; then
+            echo "FAIL: stdout mismatch"
+            exit 1
+          fi
+          
+          # Verify stderr output
+          stderr_output=$(echo "test stderr" | ./teerr 2>&1 >/dev/null)
+          if [ "$stderr_output" != "test stderr" ]; then
+            echo "FAIL: stderr mismatch"
+            exit 1
+          fi
+          
+          echo "All functional tests passed"
+
+      - name: Binary size check
+        run: |
+          ls -lh teerr
+          size=$(wc -c < teerr)
+          echo "Binary size: $size bytes"

@@ -1,0 +1,24 @@
+# Binaries
+teerr
+teerr-*
+*.exe
+
+# Variant binaries
+variants/bin/
+
+# Rust build artifacts
+variants/rust-*/target/
+
+# Test artifacts
+*.test
+*.out
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
