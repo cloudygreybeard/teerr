@@ -1,0 +1,100 @@
+.\" teerr - copy stdin to stdout and stderr
+.\" Copyright 2026 cloudygreybeard
+.\" Licensed under Apache 2.0
+.TH TEERR 1 "January 2026" "teerr 0.9.0" "User Commands"
+.SH NAME
+teerr \- copy standard input to standard output and standard error
+.SH SYNOPSIS
+.B teerr
+.RI [ fd ]
+.br
+.B teerr
+.B \-\-version
+.br
+.B teerr
+.B \-\-help
+.SH DESCRIPTION
+.B teerr
+reads data from the standard input and writes it unchanged
+to both the standard output and the standard error (or an alternate
+file descriptor if specified).
+.PP
+It is intended for use in pipelines where the value of a stream
+must be preserved for further processing while also being visible
+for logging or debugging.
+.PP
+.B teerr
+writes only to file descriptors already present in the
+process environment. It does not create files.
+.SH OPTIONS
+.TP
+.BR \-V ", " \-\-version
+Print version information and exit.
+.TP
+.BR \-h ", " \-\-help
+Print usage information and exit.
+.SH ARGUMENTS
+.TP
+.I fd
+File descriptor number to write to instead of stderr.
+Defaults to 2 (stderr).
+.SH EXAMPLES
+Capture output in a variable while echoing it to standard error:
+.PP
+.RS
+.nf
+value=$(command | teerr)
+.fi
+.RE
+.PP
+Observe pipeline output without altering the pipeline:
+.PP
+.RS
+.nf
+generate | teerr | consume
+.fi
+.RE
+.PP
+Write to file descriptor 3 instead of stderr:
+.PP
+.RS
+.nf
+command | teerr 3
+.fi
+.RE
+.SH RATIONALE
+Shell pipelines obscure intermediate values.
+.PP
+.B teerr
+exists to expose them at the moment they are produced,
+without rewriting the pipeline or introducing temporary files.
+.PP
+It is equivalent to the shell construct:
+.PP
+.RS
+.nf
+tee >(cat >&2)
+.fi
+.RE
+.PP
+but requires fewer keystrokes and no subshell.
+.SH EXIT STATUS
+.B teerr
+exits 0 on success.
+A non-zero exit status indicates an I/O error.
+.SH SEE ALSO
+.BR tee (1),
+.BR sh (1),
+.BR cat (1)
+.SH NOTES
+.B teerr
+is intentionally minimal.
+.PP
+More general facilities are provided by
+.BR tee (1).
+.SH BUGS
+None known.
+.SH AUTHORS
+cloudygreybeard
+.SH LICENSE
+Apache License 2.0

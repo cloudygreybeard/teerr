@@ -105,6 +105,7 @@ jobs:
 
             def install
               bin.install "teerr"
+              man1.install "teerr.1"
             end
 
             test do

@@ -36,6 +36,7 @@ archives:
     files:
       - LICENSE
       - README.md
+      - teerr.1
 
 checksum:
   name_template: "checksums.txt"

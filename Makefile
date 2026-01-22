@@ -1,4 +1,5 @@
 BINARY := teerr
+PREFIX ?= /usr/local
 VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 COMMIT := $(shell git rev-parse --short HEAD 2>/dev/null || echo "none")
 DATE := $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
@@ -24,6 +25,8 @@ clean:
 
 install: build
 	install -m 755 $(BINARY) $(DESTDIR)$(PREFIX)/bin/$(BINARY)
+	install -d $(DESTDIR)$(PREFIX)/share/man/man1
+	install -m 644 teerr.1 $(DESTDIR)$(PREFIX)/share/man/man1/teerr.1
 
 # GoReleaser snapshot (for testing releases locally)
 snapshot:
